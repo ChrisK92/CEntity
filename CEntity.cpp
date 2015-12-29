@@ -338,7 +338,7 @@ Vector CEntity::InternalGetSoundEmissionOrigin()
 	CEntity *pEnt = *META_IFACEPTR(CBaseEntity);
 	if (!pEnt)
 	{
-		RETURN_META_VALUE(MRES_IGNORED, NULL);
+		RETURN_META_VALUE(MRES_IGNORED, Vector());
 	}
 
 	int index = pEnt->entindex();
