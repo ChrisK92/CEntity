@@ -23,11 +23,7 @@
 #include "sm_trie_tpl.h"
 #include "extension.h"
 
-class IEntityFactoryDictionary;
 class IEntityFactory;
-
-typedef IEntityFactoryDictionary *(*EntityFactoryDictionaryCall)();
-extern EntityFactoryDictionaryCall EntityFactoryDictionary;
 
 class CBaseEntityOutput;
 #ifndef WIN32

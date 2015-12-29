@@ -39,7 +39,6 @@ SH_DECL_HOOK1_void(IVEngineServer, RemoveEdict, SH_NOATTRIB, 0, edict_t *);
 
 IEntityFactoryReal *IEntityFactoryReal::m_Head;
 
-EntityFactoryDictionaryCall EntityFactoryDictionary = NULL;
 
 CEntityManager *GetEntityManager()
 {
@@ -54,16 +53,8 @@ CEntityManager::CEntityManager()
 
 bool CEntityManager::Init(IGameConfig *pConfig)
 {
-	/* Find the IEntityFactoryDictionary* */
-	void *addr;
-	if (!pConfig->GetMemSig("EntityFactory", &addr) || addr == NULL)
-	{
-		g_pSM->LogError(myself, "[CENTITY] Couldn't find sig: %s.", "EntityFactory");
-		return false;
-	}
-
-	EntityFactoryDictionary = (EntityFactoryDictionaryCall)addr;
-	pDict = EntityFactoryDictionary();
+	/* Get the IEntityFactoryDictionary* */
+	pDict = srvtools->GetEntityFactoryDictionary();
 
 	IEntityFactoryReal *pList = IEntityFactoryReal::m_Head;
 	while (pList)
@@ -72,6 +63,7 @@ bool CEntityManager::Init(IGameConfig *pConfig)
 		pList = pList->m_Next;
 	}
 
+	void *addr;
 	if (!pConfig->GetMemSig("FireOutput", &addr) || addr == NULL)
 	{
 		g_pSM->LogError(myself, "[CENTITY] Couldn't find sig: %s.", "FireOutput");
