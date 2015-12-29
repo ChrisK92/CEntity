@@ -76,7 +76,8 @@
 #ifndef _INCLUDE_CENTITY_H_
 #define _INCLUDE_CENTITY_H_
 
-#define NO_STRING_T
+//I see no problem in not using string_t
+//#define NO_STRING_T
 
 #include "extension.h"
 #include "CEntityBase.h"
@@ -102,8 +103,9 @@ extern variant_t g_Variant;
 class CEntity;
 class CEntityTakeDamageInfo;
 
+typedef void (CEntity::*inputfunc_centity_t)(inputdata_t &data);
 #undef DEFINE_INPUTFUNC
-#define DEFINE_INPUTFUNC( fieldtype, inputname, inputfunc ) { fieldtype, #inputfunc, { 0, 0 }, 1, FTYPEDESC_INPUT, inputname, NULL, (inputfunc_t)(&classNameTypedef::inputfunc) }
+#define DEFINE_INPUTFUNC( fieldtype, inputname, inputfunc ) { fieldtype, #inputfunc, { NULL, NULL }, 1, FTYPEDESC_INPUT, inputname, NULL, (inputfunc_t)static_cast <inputfunc_centity_t> (&classNameTypedef::inputfunc) }
 
 extern CEntity *pEntityData[MAX_EDICTS+1];
 
@@ -135,6 +137,16 @@ class CFakeHandle;
 	static ret (ThisClass::* name##_Actual) params;
 
 #define SetThink(a) ThinkSet(static_cast <void (CEntity::*)(void)> (a), 0, NULL)
+
+#define BEGIN_DATADESC_CENTITY( className ) \
+datamap_t className::m_DataMap = { 0, 0, #className, NULL }; \
+datamap_t *className::GetDataDescMap(void) { \
+	m_DataMap.baseMap = BaseClass::GetDataDescMap(); \
+	return &m_DataMap; \
+} \
+datamap_t *className::GetBaseMap() { datamap_t *pResult; DataMapAccess((BaseClass *)NULL, &pResult); return pResult; } \
+BEGIN_DATADESC_GUTS(className)
+
 
 class CEntity // : public CBaseEntity  - almost.
 {
@@ -188,6 +200,8 @@ public: // CEntity
 	static CEntity* Instance(CBaseEntity *pEnt)  { return CEntityLookup::Instance(pEnt); }
 
 public: // CBaseEntity virtuals
+	virtual bool GetKeyValue(const char *szKeyName, char *szValue, int iMaxLen);
+	virtual bool KeyValue(const char *szKeyName, const char *szValue);
 	virtual void Teleport(const Vector *origin, const QAngle* angles, const Vector *velocity);
 	virtual void UpdateOnRemove();
 	virtual void Spawn();
@@ -213,6 +227,8 @@ public: // CBaseEntity non virtual helpers
 	void RemoveEFlags(int nEFlagMask);
 	bool IsEFlagSet(int nEFlagMask) const;
 
+
+	const char* GetDebugName();
 	const char* GetClassname();
 	void SetClassname(const char *pClassName);
 	const char* GetTargetName();
@@ -247,6 +263,8 @@ public: // CBaseEntity non virtual helpers
 	int GetTeam();
 
 public: // All the internal hook implementations for the above virtuals
+	DECLARE_DEFAULTHEADER(GetKeyValue, bool, (const char *szKeyName, char *szValue, int iMaxLen));
+	DECLARE_DEFAULTHEADER(KeyValue, bool, (const char *, const char *));
 	DECLARE_DEFAULTHEADER(Teleport, void, (const Vector *origin, const QAngle* angles, const Vector *velocity));
 	DECLARE_DEFAULTHEADER(UpdateOnRemove, void, ());
 	DECLARE_DEFAULTHEADER(Spawn, void, ());

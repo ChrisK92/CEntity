@@ -62,7 +62,7 @@ bool CEntityManager::Init(IGameConfig *pConfig)
 		pList->AddToList();
 		pList = pList->m_Next;
 	}
-
+	
 	void *addr;
 	if (!pConfig->GetMemSig("FireOutput", &addr) || addr == NULL)
 	{
@@ -79,7 +79,7 @@ bool CEntityManager::Init(IGameConfig *pConfig)
 	}
 
 	PhysIsInCallback = (PhysIsInCallbackFuncType)addr;
-
+	
 	/* Reconfigure all the hooks */
 	IHookTracker *pTracker = IHookTracker::m_Head;
 	while (pTracker)
@@ -103,7 +103,7 @@ bool CEntityManager::Init(IGameConfig *pConfig)
 		pSigOffsetTracker->FindSig(pConfig);
 		pSigOffsetTracker = pSigOffsetTracker->m_Next;
 	}
-
+	
 	/* Start the creation hooks! */
 	SH_ADD_HOOK(IEntityFactoryDictionary, Create, pDict, SH_MEMBER(this, &CEntityManager::Create), true);
 	SH_ADD_HOOK(IVEngineServer, RemoveEdict, engine, SH_MEMBER(this, &CEntityManager::RemoveEdict), true);

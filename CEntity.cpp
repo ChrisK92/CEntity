@@ -23,7 +23,8 @@
 #include "CPlayer.h"
 #include "CTakeDamageInfo.h"
 
-
+extern bool ParseKeyvalue(void *pObject, typedescription_t *pFields, int iNumFields, const char *szKeyName, const char *szValue);
+extern bool ExtractKeyvalue(void *pObject, typedescription_t *pFields, int iNumFields, const char *szKeyName, char *szValue, int iMaxLen);
 IHookTracker *IHookTracker::m_Head = NULL;
 IPropTracker *IPropTracker::m_Head = NULL;
 IDetourTracker *IDetourTracker::m_Head = NULL;
@@ -46,6 +47,9 @@ SH_DECL_MANUALHOOK0(GetServerVehicle, 0, 0, 0, IServerVehicle *);
 SH_DECL_MANUALHOOK1(VPhysicsTakeDamage, 0, 0, 0, int, const CEntityTakeDamageInfo &);
 SH_DECL_MANUALHOOK2(VPhysicsGetObjectList, 0, 0, 0, int, IPhysicsObject **, int);
 SH_DECL_MANUALHOOK0(GetServerClass, 0, 0, 0, ServerClass *);
+SH_DECL_MANUALHOOK2(KeyValue, 0, 0, 0, bool, const char *, const char *);
+SH_DECL_MANUALHOOK3(GetKeyValue, 0, 0, 0, bool, const char *, char*, int);
+
 
 DECLARE_HOOK(Teleport, CEntity);
 DECLARE_HOOK(UpdateOnRemove, CEntity);
@@ -62,6 +66,8 @@ DECLARE_HOOK(GetServerVehicle, CEntity);
 DECLARE_HOOK(VPhysicsTakeDamage, CEntity);
 DECLARE_HOOK(VPhysicsGetObjectList, CEntity);
 DECLARE_HOOK(GetServerClass, CEntity);
+DECLARE_HOOK(GetKeyValue, CEntity);
+DECLARE_HOOK(KeyValue, CEntity);
 
 //Sendprops
 DEFINE_PROP(m_iTeamNum, CEntity);
@@ -98,13 +104,21 @@ PhysIsInCallbackFuncType PhysIsInCallback;
 
 datamap_t* CEntity::GetDataDescMap()
 {
+	datamap_t* base = NULL;
 	if (!m_bInGetDataDescMap)
-		return SH_MCALL(BaseEntity(), GetDataDescMap)();
+	{
+		base = SH_MCALL(BaseEntity(), GetDataDescMap)();
+		m_DataMap.baseMap = base;
+		return &m_DataMap;
+	}
+
 
 	SET_META_RESULT(MRES_IGNORED);
 	SH_GLOB_SHPTR->DoRecall();
 	SourceHook::EmptyClass *thisptr = reinterpret_cast<SourceHook::EmptyClass*>(SH_GLOB_SHPTR->GetIfacePtr());
-	RETURN_META_VALUE(MRES_SUPERCEDE, (thisptr->*(__SoureceHook_FHM_GetRecallMFPGetDataDescMap(thisptr)))());
+	base = (thisptr->*(__SoureceHook_FHM_GetRecallMFPGetDataDescMap(thisptr)))();
+	m_DataMap.baseMap = base;
+	RETURN_META_VALUE(MRES_SUPERCEDE, &m_DataMap);
 }
 
 datamap_t* CEntity::InternalGetDataDescMap()
@@ -314,6 +328,92 @@ void CEntity::InternalTouch(CBaseEntity *pOther)
 		pEnt->m_bInTouch = false;
 }
 
+
+bool CEntity::GetKeyValue(const char *szKeyName, char *szValue, int iMaxLen)
+{
+	for (datamap_t *dmap = GetDataDescMap(); dmap != NULL; dmap = dmap->baseMap)
+	{
+		if (ExtractKeyvalue(this, dmap->dataDesc, dmap->dataNumFields, szKeyName, szValue, iMaxLen))
+			return true;
+
+		if (strcmp(dmap->dataClassName, "CEntity") == 0)
+			break;
+	}
+
+	if (!m_bInGetKeyValue)
+		return SH_MCALL(BaseEntity(), GetKeyValue) (szKeyName, szValue, iMaxLen);
+
+	//Msg("end!\n");
+	SET_META_RESULT(MRES_IGNORED);
+	SH_GLOB_SHPTR->DoRecall();
+	SourceHook::EmptyClass *thisptr = reinterpret_cast<SourceHook::EmptyClass*>(SH_GLOB_SHPTR->GetIfacePtr());
+	RETURN_META_VALUE(MRES_SUPERCEDE, (thisptr->*(__SoureceHook_FHM_GetRecallMFPGetKeyValue(thisptr))) (szKeyName, szValue, iMaxLen));
+}
+
+bool CEntity::InternalGetKeyValue(const char *szKeyName, char *szValue, int iMaxLen)
+{
+	SET_META_RESULT(MRES_SUPERCEDE);
+	CEntity *pEnt = (CEntity *)CEntity::Instance(META_IFACEPTR(CBaseEntity));
+	if (!pEnt)
+		RETURN_META_VALUE(MRES_IGNORED, (bool)0);
+
+	int index = pEnt->entindex();
+
+	pEnt->m_bInGetKeyValue = true;
+
+
+	bool retvalue = pEnt->GetKeyValue(szKeyName, szValue, iMaxLen);
+	pEnt = (CEntity *)CEntity::Instance(index);
+
+	if (pEnt)
+		pEnt->m_bInGetKeyValue = false;
+	return retvalue;
+}
+
+
+bool CEntity::KeyValue(const char *szKeyName, const char *szValue)
+{
+	// loop through the data description, and try and place the keys in
+	for (datamap_t *dmap = GetDataDescMap(); dmap != NULL; dmap = dmap->baseMap)
+	{
+		if (ParseKeyvalue(this, dmap->dataDesc, dmap->dataNumFields, szKeyName, szValue))
+		{
+			return true;
+		}
+		if (strcmp(dmap->dataClassName, "CEntity") == 0)
+			break;
+	}
+	if (!m_bInKeyValue)
+		return SH_MCALL(BaseEntity(), KeyValue) (szKeyName, szValue);
+
+	//Msg("end!\n");
+	SET_META_RESULT(MRES_IGNORED);
+	SH_GLOB_SHPTR->DoRecall();
+	SourceHook::EmptyClass *thisptr = reinterpret_cast<SourceHook::EmptyClass*>(SH_GLOB_SHPTR->GetIfacePtr());
+	RETURN_META_VALUE(MRES_SUPERCEDE, (thisptr->*(__SoureceHook_FHM_GetRecallMFPKeyValue(thisptr))) (szKeyName, szValue));
+}
+
+bool CEntity::InternalKeyValue(const char *szKeyName, const char *szValue)
+{
+	SET_META_RESULT(MRES_SUPERCEDE);
+	CEntity *pEnt = (CEntity *)CEntity::Instance(META_IFACEPTR(CBaseEntity));
+	if (!pEnt)
+		RETURN_META_VALUE(MRES_IGNORED, (bool)0);
+
+	int index = pEnt->entindex();
+
+	pEnt->m_bInKeyValue = true;
+
+
+	bool retvalue = pEnt->KeyValue(szKeyName, szValue);
+	pEnt = (CEntity *)CEntity::Instance(index);
+
+	if (pEnt)
+		pEnt->m_bInKeyValue = false;
+	return retvalue;
+}
+
+
 Vector CEntity::GetSoundEmissionOrigin()
 {
 	if (!m_bInGetSoundEmissionOrigin)
@@ -450,7 +550,7 @@ bool CEntity::WillThink()
 
 const char* CEntity::GetClassname()
 {
-	return STRING(m_iClassname);
+	return m_iClassname->ToCStr();
 }
 
 void CEntity::SetClassname(const char *pClassName)
@@ -460,7 +560,7 @@ void CEntity::SetClassname(const char *pClassName)
 
 const char* CEntity::GetTargetName()
 {
-	return STRING(m_iName);
+	return m_iName->ToCStr();
 }
 
 void CEntity::SetTargetName(const char *pTargetName)
@@ -536,21 +636,105 @@ int CEntity::GetTeam()
 	return m_iTeamNum;
 }
 
+
 bool CEntity::AcceptInput(const char *szInputName, CEntity *pActivator, CEntity *pCaller, variant_t Value, int outputID)
 {
+	bool inBaseEntity = false;
+	for (datamap_t *dmap = GetDataDescMap(); dmap != NULL; dmap = dmap->baseMap)
+	{
+
+
+		// search through all the actions in the data description, looking for a match
+		for (int i = 0; i < dmap->dataNumFields; i++)
+		{
+			if (dmap->dataDesc[i].flags & FTYPEDESC_INPUT)
+			{
+				if (!Q_stricmp(dmap->dataDesc[i].externalName, szInputName))
+				{
+					// found a match
+					char szBuffer[256];
+					// mapper debug message
+					if (pCaller != NULL)
+					{
+						Q_snprintf(szBuffer, sizeof(szBuffer), "(%0.2f) input %s: %s.%s(%s)\n", gpGlobals->curtime, STRING(*pCaller->m_iName), GetDebugName(), szInputName, Value.String());
+					}
+					else
+					{
+						Q_snprintf(szBuffer, sizeof(szBuffer), "(%0.2f) input <NULL>: %s.%s(%s)\n", gpGlobals->curtime, GetDebugName(), szInputName, Value.String());
+					}
+					DevMsg(2, "%s", szBuffer);
+
+					// convert the value if necessary
+					if (Value.FieldType() != dmap->dataDesc[i].fieldType)
+					{
+						if (!(Value.FieldType() == FIELD_VOID && dmap->dataDesc[i].fieldType == FIELD_STRING)) // allow empty strings
+						{
+							if (!Value.Convert((fieldtype_t)dmap->dataDesc[i].fieldType))
+							{
+								//Warning
+								// bad conversion
+								Warning("!! ERROR: bad input/output link:\n!! %s(%s,%s) doesn't match type from %s(%s)\n",
+									GetClassname(), GetClassname(), szInputName,
+									(pCaller != NULL) ? pCaller->GetClassname() : "<null>",
+									(pCaller != NULL) ? pCaller->GetTargetName() : "<null>");
+								return false;
+							}
+						}
+					}
+					if (inBaseEntity)
+						continue;
+					// call the input handler, or if there is none just set the value
+					inputfunc_centity_t pfnInput = (inputfunc_centity_t)dmap->dataDesc[i].inputFunc;
+
+					if (pfnInput)
+					{
+						// Package the data into a struct for passing to the input handler.
+						inputdata_t data;
+						data.pActivator = pActivator->BaseEntity();
+						data.pCaller = pCaller->BaseEntity();
+						data.value = Value;
+						data.nOutputID = outputID;
+
+						(this->*pfnInput)(data);
+					}
+					else if (dmap->dataDesc[i].flags & FTYPEDESC_KEY)
+					{
+						// set the value directly
+						Value.SetOther(((char*)this) + dmap->dataDesc[i].fieldOffset[TD_OFFSET_NORMAL]);
+
+						// TODO: if this becomes evil and causes too many full entity updates, then we should make
+						// a macro like this:
+						//
+						// define MAKE_INPUTVAR(x) void Note##x##Modified() { x.GetForModify(); }
+						//
+						// Then the datadesc points at that function and we call it here. The only pain is to add
+						// that function for all the DEFINE_INPUT calls.
+						//NetworkStateChanged();
+					}
+
+					return true;
+				}
+
+			}
+
+		}
+		if (strcmp(dmap->dataClassName, "CEntity") == 0)
+			inBaseEntity = true;// break;
+	}
+
 	if (!m_bInAcceptInput)
 	{
 		return SH_MCALL(BaseEntity(), AcceptInput)(szInputName, *pActivator, *pCaller, Value, outputID);
 	}
-
 	/**
-	 * This gets the award for the worst hack so far. Detects the end of waiting for players and probably lots of other things.
-	 * Forces players out of vehicles.
-	 */
+	* This gets the award for the worst hack so far. Detects the end of waiting for players and probably lots of other things.
+	* Forces players out of vehicles.
+
+
 	if (strcmp(szInputName, "ShowInHUD") == 0 || strcmp(szInputName, "RoundSpawn") == 0 || strcmp(szInputName, "RoundWin") == 0)
 	{
 		CEntity *pEnt;
-		for (int i=1; i<=gpGlobals->maxClients; i++)
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
 			pEnt = CEntity::Instance(i);
 			if (!pEnt)
@@ -568,7 +752,7 @@ bool CEntity::AcceptInput(const char *szInputName, CEntity *pActivator, CEntity 
 			}
 		}
 	}
-
+	*/
 	SET_META_RESULT(MRES_IGNORED);
 	SH_GLOB_SHPTR->DoRecall();
 	SourceHook::EmptyClass *thisptr = reinterpret_cast<SourceHook::EmptyClass*>(SH_GLOB_SHPTR->GetIfacePtr());
@@ -690,4 +874,20 @@ int CEntity::GetMoveCollide() const
 void CEntity::SetMoveCollide( int MoveCollide )
 {
 	*m_MoveCollide = MoveCollide;
+}
+
+
+const char *CEntity::GetDebugName()
+{
+	if (this == NULL)
+		return "<<null>>";
+
+	if (*m_iName != NULL_STRING)
+	{
+		return STRING(*m_iName);
+	}
+	else
+	{
+		return STRING(*m_iClassname);
+	}
 }
