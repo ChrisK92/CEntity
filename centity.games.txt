@@ -6,38 +6,38 @@
 		{
 			"Teleport"
 			{
-				"windows"	"106"
-				"linux"		"107"
+				"windows"	"108"
+				"linux"		"109"
 			}
 			"Spawn"
 			{
-				"windows"	"21"
-				"linux"		"22"
+				"windows"	"22"
+				"linux"		"23"
 			}
 			"UpdateOnRemove"
 			{
-				"windows"	"103"
-				"linux"		"104"
+				"windows"	"105"
+				"linux"		"106"
 			}
 			"Think"
 			{
-				"windows"	"46"
-				"linux"		"47"
+				"windows"	"47"
+				"linux"		"48"
 			}
 			"OnTakeDamage"
 			{
-				"windows"	"61"
-				"linux"		"62"
+				"windows"	"62"
+				"linux"		"63"
 			}
 			"AcceptInput"
 			{
-				"windows"	"35"
-				"linux"		"36"
+				"windows"	"36"
+				"linux"		"37"
 			}
 			"PlayerRunCmd"
 			{
-				"windows"	"407"
-				"linux"		"408"
+				"windows"	"417"
+				"linux"		"418"
 			}
 			"GetDataDescMap"
 			{
@@ -46,108 +46,108 @@
 			}
 			"StartTouch"
 			{
-				"windows"	"96"
-				"linux"		"97"
-			}
-			"Touch"
-			{
-				"windows"	"97"
-				"linux"		"98"
-			}
-			"EndTouch"
-			{
 				"windows"	"98"
 				"linux"		"99"
 			}
+			"Touch"
+			{
+				"windows"	"99"
+				"linux"		"100"
+			}
+			"EndTouch"
+			{
+				"windows"	"100"
+				"linux"		"101"
+			}
 			"GetServerVehicle"
 			{
-				"windows"	"87"
-				"linux"		"88"
+				"windows"	"89"
+				"linux"		"90"
 			}
 			"LeaveVehicle"
 			{
-				"windows"	"382"
-				"linux"		"383"
+				"windows"	"392"
+				"linux"		"393"
 			}
 			"VPhysicsTakeDamage"
 			{
-				"windows"	"155"
-				"linux"		"156"
+				"windows"	"158"
+				"linux"		"159"
 			}
 			"VPhysicsGetObjectList"
 			{
-				"windows"	"161"
-				"linux"		"162"
+				"windows"	"164"
+				"linux"		"165"
 			}
 			"GiveNamedItem"
 			{
-				"windows"	"458"
-				"linux"		"465"
+				"windows"	"477"
+				"linux"		"478"
 			}
 			"RemovePlayerItem"
 			{
-				"windows"	"262"
-				"linux"		"263"
+				"windows"	"269"
+				"linux"		"270"
 			}
 			"Weapon_GetSlot"
+			{
+				"windows"	"267"
+				"linux"		"268"
+			}
+			"GetClientEyeAngles"
+			{
+				"windows"	"131"
+				"linux"		"132"
+			}
+			"Weapon_Equip"
 			{
 				"windows"	"260"
 				"linux"		"261"
 			}
-			"GetClientEyeAngles"
-			{
-				"windows"	"129"
-				"linux"		"130"
-			}
-			"Weapon_Equip"
-			{
-				"windows"	"253"
-				"linux"		"254"
-			}
 			"PreThink"
 			{
-				"windows"	"324"
-				"linux"		"325"
+				"windows"	"331"
+				"linux"		"332"
 			}
 			"PostThink"
 			{
-				"windows"	"325"
-				"linux"		"326"
+				"windows"	"332"
+				"linux"		"333"
 			}
 			"WeaponSwitch"
 			{
-				"windows"	"256"
-				"linux"		"257"
+				"windows"	"263"
+				"linux"		"264"
 			}
 			"CanSpeakVoiceCommand"
 			{
-				"windows"	"447"
-				"linux"		"448"
+				"windows"	"458"
+				"linux"		"459"
 			}
 			"IsReadyToSpawn"
 			{
-				"windows"	"422"
-				"linux"		"423"
+				"windows"	"432"
+				"linux"		"433"
 			}
 			"OnTakeDamage_Alive"
 			{
-				"windows"	"264"
-				"linux"		"265"
+				"windows"	"271"
+				"linux"		"272"
 			}
 			"Jump"
 			{
-				"windows"	"322"
-				"linux"		"323"
+				"windows"	"329"
+				"linux"		"330"
 			}
 			"ProcessUserCmds"
 			{
-				"windows"	"406"
-				"linux"		"407"
+				"windows"	"416"
+				"linux"		"417"
 			}
 			"GetSoundEmissionOrigin"
 			{
-				"windows"	"148"
-				"linux"		"149"
+				"windows"	"150"
+				"linux"		"151"
 			}
 			"GetServerClass"
 			{
@@ -156,13 +156,18 @@
 			}
 			"StudioFrameAdvance"
 			{
-				"windows"	"186"
-				"linux"		"187"
+				"windows"	"189"
+				"linux"		"190"
 			}
 			"ShouldGib"
 			{
-				"windows"	"457"
-				"linux"		"458"
+				"windows"	"469"
+				"linux"		"470"
+			}
+			"FVisible"
+			{
+				"windows"	"142"
+				"linux"		"142"
 			}
 		}
 	}
@@ -170,34 +175,28 @@
 	{
 		"Signatures"
 		{
-			"EntityFactory"
-			{
-				"library"	"server"
-				"windows"	"\xB8\x01\x00\x00\x00\x84\x2A\x2A\x2A\x2A\x2A\x75\x1D\x09\x2A\x2A\x2A\x2A\x2A\xB9\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x83\xC4\x04\xB8\x2A\x2A\x2A\x2A\xC3"
-				"linux"		"@_Z23EntityFactoryDictionaryv"
-			}
 			"FireOutput"
 			{
 				"library"	"server"
-				"windows"	"\x81\xEC\x1C\x01\x00\x00\x53\x55\x56\x8B\x71\x14\x85\xF6"
+				"windows"	"\x55\x8B\xEC\x81\xEC\x2A\x2A\x2A\x2A\x53\x8B\xC1"
 				"linux"		"@_ZN17CBaseEntityOutput10FireOutputE9variant_tP11CBaseEntityS2_f"
 			}
 			"PhysIsInCallback"
 			{
 				"library"	"server"
-				"windows"	"\x8B\x0D\x2A\x2A\x2A\x2A\x85\xC9\x74\x0E\x8B\x01\x8B\x90\x8C\x00\x00\x00\xFF\xD2\x84\xC0\x75\x09\x83\x3D\x2A\x2A\x2A\x2A\x00\x7E\x03\xB0\x01\xC3"
+				"windows"	"\x8B\x0D\x2A\x2A\x2A\x2A\x85\xC9\x74\x0E\x8B\x01\x8B\x2A\x8C\x00\x00\x00\xFF\x2A\x84\xC0\x75\x09\x83\x3D\x2A\x2A\x2A\x2A\x00\x7E\x03\xB0\x01\xC3"
 				"linux"		"@_Z16PhysIsInCallbackv"
 			}
 			"HandleCommand_JoinClass"
 			{
 				"library"		"server"
-				"windows"		"\xA1\x2A\x2A\x2A\x2A\x83\xEC\x0C\x83\xB8\x2A\x03\x00\x00\x08\x56"
+				"windows"		"\x55\x8B\xEC\x83\xEC\x20\x53\x8B\xD9\x8B\x0D\x2A\x2A\x2A\x2A\x56\x33\xF6"
 				"linux"			"@_ZN9CTFPlayer23HandleCommand_JoinClassEPKcb"
 			}
 			"Dissolve"
 			{
 				"library"		"server"
-				"windows"		"\x83\xEC\x0C\x80\x7C\x24\x18\x00\x57\x8B\xF9\x74\x15\xF7\x87"
+				"windows"		"\x55\x8B\xEC\x80\x7D\x10\x00\x56\x57\x8B\xF1\x74\x14"
 				"linux"			"@_ZN14CBaseAnimating8DissolveEPKcfbi6Vectori"
 			}
 		}
