@@ -137,8 +137,8 @@ class CFakeHandle;
 	static ret (ThisClass::* name##_Actual) params;
 
 #define SetThink(a) ThinkSet(static_cast <void (CEntity::*)(void)> (a), 0, NULL)
-
-#define BEGIN_DATADESC_CENTITY( className ) \
+#undef BEGIN_DATADESC
+#define BEGIN_DATADESC( className ) \
 datamap_t className::m_DataMap = { 0, 0, #className, NULL }; \
 datamap_t *className::GetDataDescMap(void) { \
 	m_DataMap.baseMap = BaseClass::GetDataDescMap(); \
