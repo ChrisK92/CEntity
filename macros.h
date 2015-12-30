@@ -358,7 +358,7 @@ public: \
 			{ \
 				if (search == PROP_SEND) \
 				{ \
-					found = GetSendPropOffset(pEnt->edict()->GetNetworkable()->GetServerClass()->GetName(), #name, offset); \
+					found = GetSendPropOffset(pEnt->GetNetworkable()->GetServerClass()->GetName(), #name, offset); \
 				} \
 				else \
 				{ \

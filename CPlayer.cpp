@@ -120,7 +120,7 @@ void CPlayer::PlayerRunCmd(CUserCmd *pCmd, IMoveHelper *pHelper)
 				/* HACKHACK: Implement FindEntityByClassname or sig it */
 				/* Unsure why we need to do this, SetPassenger should have been called and removed it - Manually calling this == client crash */
 				CEntity *pEnt;
-				for (int i=0; i<= MAX_EDICTS; i++)
+				for (int i = 0; i <= NUM_ENT_ENTRIES; i++)
 				{
 					pEnt = CEntity::Instance(i);
 					if (!pEnt)

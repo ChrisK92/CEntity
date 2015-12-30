@@ -107,7 +107,7 @@ typedef void (CEntity::*inputfunc_centity_t)(inputdata_t &data);
 #undef DEFINE_INPUTFUNC
 #define DEFINE_INPUTFUNC( fieldtype, inputname, inputfunc ) { fieldtype, #inputfunc, { NULL, NULL }, 1, FTYPEDESC_INPUT, inputname, NULL, (inputfunc_t)static_cast <inputfunc_centity_t> (&classNameTypedef::inputfunc) }
 
-extern CEntity *pEntityData[MAX_EDICTS+1];
+extern CEntity *pEntityData[NUM_ENT_ENTRIES + 1];
 
 typedef void (CEntity::*BASEPTR)(void);
 typedef void (CEntity::*ENTITYFUNCPTR)(CEntity *pOther);
@@ -161,7 +161,8 @@ public: // CEntity
 	void ClearFlags();
 	virtual void Destroy();
 	CBaseEntity *BaseEntity();
-
+	const CBaseHandle& GetRefEHandle() const;
+	IServerNetworkable*	GetNetworkable();
 	operator CBaseEntity* ()
 	{
 		if (this == NULL)
@@ -329,5 +330,15 @@ public:
 		return CEntityLookup::Instance(this);
 	}
 };
+
+inline IServerNetworkable* CEntity::GetNetworkable()
+{
+	return m_pEntity->GetNetworkable();
+}
+
+inline const CBaseHandle& CEntity::GetRefEHandle() const
+{
+	return m_pEntity->GetRefEHandle();
+}
 
 #endif // _INCLUDE_CENTITY_H_

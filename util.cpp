@@ -287,7 +287,7 @@ bool variant_t::Convert(fieldtype_t newType)
 			{
 				// FIXME: do we need to pass an activator in here?
 				CEntity *pEnt;
-				for (int i = 0; i <= MAX_EDICTS; i++)
+				for (int i = 0; i <= NUM_ENT_ENTRIES; i++)
 				{
 					pEnt = CEntity::Instance(i);
 					if (!pEnt)

@@ -63,7 +63,7 @@ public:
 
 	CEntity *Create(edict_t *pEdict, CBaseEntity *pEnt)
 	{
-		if (!pEdict || !pEnt)
+		if (!pEnt)
 		{
 			return NULL;
 		}

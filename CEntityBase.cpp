@@ -20,7 +20,7 @@
 #include "CEntityBase.h"
 #include "CEntity.h"
 
-CEntity *pEntityData[MAX_EDICTS+1] = {NULL};
+CEntity *pEntityData[NUM_ENT_ENTRIES + 1];
 
 CEntity *CEntityLookup::Instance(CBaseEntity *pEnt)
 {

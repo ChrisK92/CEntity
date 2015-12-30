@@ -46,7 +46,7 @@ public:
 	void LinkEntityToClass(IEntityFactory *pFactory, const char *className, const char *replaceName);
 
 	virtual IServerNetworkable *Create(const char *pClassName);
-	void RemoveEdict(edict_t *e);
+	void OnRemoveEntity(CBaseEntity *pEnt, CBaseHandle handle);
 	
 private:
 	IEntityFactory **FindFactoryInTrie(KTrie<IEntityFactory *> *pTrie, CBaseEntity *pEntity, const char *pClassName);
@@ -57,8 +57,17 @@ private:
 	KTrie<const char *> pSwapTrie;
 	KTrie<bool> pHookedTrie;
 	IEntityFactoryDictionary *pDict;
+	CGlobalEntityList* pEntList;
 	bool m_bEnabled;
 	
+};
+
+// This hack allows us to access the protected virtual functions of CGlobalEntityList 
+class CEntityHackedList
+{
+public:
+	virtual void OnAddBaseEntity(CBaseEntity *, CBaseHandle) {}
+	virtual void OnRemoveBaseEntity(CBaseEntity *, CBaseHandle) {}
 };
 
 CEntityManager *GetEntityManager();

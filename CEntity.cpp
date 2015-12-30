@@ -148,7 +148,7 @@ void CEntity::Init(edict_t *pEdict, CBaseEntity *pBaseEntity)
 
 	pEntityData[entindex()] = this;
 
-	if(!m_pEntity || !m_pEdict)
+	if (!m_pEntity)
 		return;
 
 	m_pfnThink = NULL;
@@ -571,7 +571,8 @@ void CEntity::SetTargetName(const char *pTargetName)
 void CEntity::ChangeTeam(int iTeamNum)
 {
 	m_iTeamNum = iTeamNum;
-	edict()->StateChanged(m_iTeamNumPropTrackerObj.GetOffset());
+	if (edict())
+		edict()->StateChanged(m_iTeamNumPropTrackerObj.GetOffset());
 }
 
 int CEntity::GetTeamNumber(void) const
@@ -817,7 +818,8 @@ CEntity *CEntity::GetOwner()
 
 void CEntity::SetOwner(CEntity *pOwnerEntity)
 {
-	(*m_hOwnerEntity.ptr).Set(pOwnerEntity->edict()->GetIServerEntity());
+	if (pOwnerEntity->edict())
+		(*m_hOwnerEntity.ptr).Set(pOwnerEntity->edict()->GetIServerEntity());
 }
 
 IPhysicsObject *CEntity::VPhysicsGetObject(void) const
